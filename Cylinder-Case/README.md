@@ -68,8 +68,8 @@ cd cylinder-case-test
 
 ```bash
 # Linux / macOS
-docker run --rm -it -v "$(pwd)":/data -w /data opencfdofficial/openfoam2512-run bash
-
+./openfoam2512-run
+```
 
 ### 3. Build mesh and run solver
 
@@ -95,8 +95,7 @@ This reads the force coefficient log, trims the transient phase, runs an FFT on 
 
 ### Parallel option
 
-For a 3-3.5× speedup on 4 cores:
-
+To speed up the calculations with 4 cores (You can put however much you have)
 ```bash
 decomposePar
 mpirun -np 4 pimpleFoam -parallel | tee log.pimpleFoam
