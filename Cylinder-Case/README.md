@@ -60,7 +60,7 @@ Tested on macOS and Linux. Windows works inside WSL2 or PowerShell with Docker D
 ### 1. Clone
 
 ```bash
-git clone https://github.com/danniesidequestmaxxing/cylinder-case-test.git
+git clone https://github.com/wjunyap/OpenFoam-Cases/tree/d877496c9440ebd58ae3a0b71cc408a6ee6ef17c/Cylinder-Case
 cd cylinder-case-test
 ```
 
@@ -70,9 +70,6 @@ cd cylinder-case-test
 # Linux / macOS
 docker run --rm -it -v "$(pwd)":/data -w /data opencfdofficial/openfoam2512-run bash
 
-# Windows PowerShell
-docker run --rm -it -v "${PWD}:/data" -w /data opencfdofficial/openfoam2512-run bash
-```
 
 ### 3. Build mesh and run solver
 
