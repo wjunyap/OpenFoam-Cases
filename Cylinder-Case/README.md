@@ -135,9 +135,8 @@ Then in ParaView, zoom on the obstacle patch with Surface With Edges and confirm
 
 ## Results
 
-![Cl and Cd time series, transient and saturated shedding](images/forces_timeseries.png)
+![Cl and Cd time series, transient and saturated shedding, FFT spectrum of Cl with shedding peak](images/strouhal.png)
 
-![FFT spectrum of Cl with shedding peak](images/fft_spectrum.png)
 
 ![Vorticity Z-component at periodic steady state](images/vorticity_snapshot.png)
 

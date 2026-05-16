@@ -1,0 +1,89 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+
+application     pimpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+// At Re=100, expected shedding period T = D / (St * U) = 5 / (0.165 * 1) ~ 30.3 s.
+// endTime = 300 gives ~10 shedding cycles. First 50-80 s is the transient
+// (wake building up). After that you get clean periodic data for Strouhal.
+endTime         800;
+// Initial dt; adjustTimeStep will resize each step.
+deltaT          0.02;
+writeControl    adjustableRunTime;
+writeInterval   0.5;                  // ~60 frames per shedding cycle
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+adjustTimeStep  yes;
+maxCo           0.8;
+maxDeltaT       0.1;
+functions
+{
+    forceCoeffs
+    {
+        type            forceCoeffs;
+        libs            ("libforces.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        patches         (obstacle);
+        rho             rhoInf;
+        rhoInf          1.0;
+        log             yes;
+        liftDir         (0 1 0);
+        dragDir         (1 0 0);
+        CofR            (0 0 0);
+        pitchAxis       (0 0 1);
+        magUInf         1.0;
+        lRef            5.0;          // cylinder diameter D
+        Aref            5.0;          // D * span = 5.0 * 1.0
+    }
+    forces
+    {
+        type            forces;
+        libs            ("libforces.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        patches         (obstacle);
+        rho             rhoInf;
+        rhoInf          1.0;
+        log             yes;
+        CofR            (0 0 0);
+    }
+    vorticity
+    {
+        // Computes curl(U) and writes it as a field at every save time.
+        // The z-component is what you colour in ParaView to see the vortex street.
+        type            vorticity;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    writeTime;
+    }
+    Q
+    {
+        // Computes the second invariant of the velocity gradient tensor, which
+        // is a common vortex identification method. Positive Q means rotation
+        // dominates over strain. You can use it as an alternative to vorticity.
+        type            Q;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    writeTime;
+    }
+    
+}

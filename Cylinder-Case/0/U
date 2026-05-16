@@ -1,0 +1,52 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+dimensions      [0 1 -1 0 0 0 0];    // m/s
+// Seed the interior with freestream plus a tiny y-component (0.01).
+// The y-component breaks the perfect symmetry of the mesh+BCs and triggers
+// vortex shedding within ~2-3 reference times. Without this seed the wake
+// can stay artificially symmetric for tens of seconds because there's no
+// floating-point noise to amplify.
+internalField   uniform (1 0.01 0);
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (1 0 0);
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    wall
+    {
+        // Top and bottom of the rectangular domain.
+        // symmetryPlane = zero normal velocity, zero gradient on tangential
+        // components. Acts as a slip wall, making the far field
+        // freestream-like rather than channel-like.
+        type            symmetry;
+    }
+    obstacle
+    {
+        // The cylinder. "noSlip" is the modern v2512 shortcut for
+        // fixedValue uniform (0 0 0).
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+ddtSchemes
+{
+    // backward = second-order implicit in time. Stable, mildly dissipative.
+    // Alternative: CrankNicolson 0.9 (slightly more accurate, slightly less stable).
+    default         backward;
+}
+gradSchemes
+{
+    default         Gauss linear;
+    grad(U)         cellLimited Gauss linear 1;
+}
+divSchemes
+{
+    default         none;
+    // linearUpwindV: 2nd-order upwind, vector-friendly. Standard for
+    // transient incompressible laminar/URANS. Pure central (Gauss linear)
+    // is more accurate but can produce wiggles on coarse meshes.
+    div(phi,U)      Gauss linearUpwindV grad(U);
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+}
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+interpolationSchemes
+{
+    default         linear;
+}
+snGradSchemes
+{
+    default         corrected;
+}

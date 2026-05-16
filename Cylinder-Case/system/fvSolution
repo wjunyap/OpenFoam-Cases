@@ -1,0 +1,66 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-7;
+        relTol          0.01;
+        smoother        GaussSeidel;
+    }
+    // pFinal = solver settings for the final pressure correction in each
+    // PIMPLE iteration. relTol 0 forces it to drive to absolute tolerance.
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+    "(U|k|omega|epsilon)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-8;
+        relTol          0.01;
+    }
+    "(U|k|omega|epsilon)Final"
+    {
+        $U;
+        relTol          0;
+    }
+}
+PIMPLE
+{
+    nOuterCorrectors        2;     // PIMPLE outer loops per time step
+    nCorrectors             2;     // PISO pressure-velocity inner loops
+    nNonOrthogonalCorrectors 1;    // for mild non-orthogonality of the O-grid
+    pRefCell                0;
+    pRefValue               0;
+}
+relaxationFactors
+{
+    // Transient PIMPLE: factors of 1.0 (no under-relaxation). The time
+    // derivative itself provides stabilisation. Steady SIMPLE would use 0.1-0.3.
+    fields
+    {
+        p       1.0;
+    }
+    equations
+    {
+        U       1.0;
+        UFinal  1.0;
+    }
+}
